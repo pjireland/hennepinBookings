@@ -30,5 +30,4 @@ def lambda_handler(event, context):
                     'success': 1,
                     'contents': contents
                 })
-        }        
-
+        }

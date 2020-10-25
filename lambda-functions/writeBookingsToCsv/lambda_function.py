@@ -8,12 +8,12 @@ import json
 import os
 
 
-def callAPI(path, params = {}):
+def call_API(path, params={}):
     res = requests.get("https://api.hennepin.us/api/jailroster/bookings/" + path,
-            params=params,
-            headers={
-                "Ocp-Apim-Subscription-Key": "6c62b8665d1048dc93ca46400dbca667"
-                })
+                       params=params,
+                       headers={
+                           "Ocp-Apim-Subscription-Key": "6c62b8665d1048dc93ca46400dbca667"
+                       })
 
     if res.status_code != 200:
         print("GET request failed " + path, file=sys.stderr)
@@ -29,26 +29,27 @@ def callAPI(path, params = {}):
 #            "": Show all (default)
 #            "REL": Released from Custody
 #            "IN":  In Custody
-def getAllBookings(startDate, endDate, resStatus = ""):
-    res = callAPI("by-custody",
-            params={
-                "resStatus": resStatus,
-                "startDate": startDate,
-                "endDate": endDate
-                })
+def get_all_bookings(startDate, endDate, resStatus=""):
+    res = call_API("by-custody",
+                  params={
+                      "resStatus": resStatus,
+                      "startDate": startDate,
+                      "endDate": endDate
+                  })
 
     if res.status_code == 200:
         return res.json()
 
 
-def getBooking(bookingNumber):
-    res = callAPI(bookingNumber)
+def get_booking(bookingNumber):
+    res = call_API(bookingNumber)
 
     try:
         return res.json()
     except ValueError:
         # Missing record
-        print("JSONDecodeError for bookingNumber: " + bookingNumber, file=sys.stderr)
+        print("JSONDecodeError for bookingNumber: " +
+              bookingNumber, file=sys.stderr)
 
 
 def convert_to_df(bookings_array):
@@ -60,16 +61,17 @@ def convert_to_df(bookings_array):
             df = row
         else:
             df = df.append(row, ignore_index=True)
-    df = pd.concat([df.drop(['cases'], axis=1), df['cases'].apply(pd.Series)], axis=1)
+    df = pd.concat([df.drop(['cases'], axis=1),
+                    df['cases'].apply(pd.Series)], axis=1)
     return df
 
 
 def write_csv(start_date, end_date, filename):
     '''Write the csv with booking info to a file'''
-    bookings = getAllBookings(start_date, end_date) 
-    finalOutput=[]
+    bookings = get_all_bookings(start_date, end_date)
+    finalOutput = []
     for booking in bookings:
-        bookRes = getBooking(booking["bookingNumber"])
+        bookRes = get_booking(booking["bookingNumber"])
         if bookRes != None:
             finalOutput.append(bookRes)
     df = convert_to_df(finalOutput)
@@ -92,5 +94,3 @@ def lambda_handler(event, context):
     filename = event['filename']
     write_csv(start_date, end_date, filename)
     return True
-
-
