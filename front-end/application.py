@@ -70,7 +70,7 @@ def check_if_ready():
                                as_attachment=True,
                                cache_timeout=0)
     else:
-        time.sleep(15)
+        time.sleep(50)
         return flask.redirect('/dash/checkIfReady?filename=' + filename)
 
 
