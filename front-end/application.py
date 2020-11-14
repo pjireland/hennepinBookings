@@ -25,8 +25,6 @@ app.layout = html.Div(children=[
     dcc.DatePickerRange(
         id='my-date-picker-range',
         min_date_allowed=datetime.datetime(2016, 1, 1),
-        max_date_allowed=datetime.datetime(
-            tomorrow.year, tomorrow.month, tomorrow.day),
         initial_visible_month=datetime.datetime(
             today.year, today.month, today.day),
         start_date=datetime.datetime(
