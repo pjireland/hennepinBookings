@@ -63,6 +63,10 @@ def convert_to_df(bookings_array):
             df = df.append(row, ignore_index=True)
     df = pd.concat([df.drop(['cases'], axis=1),
                     df['cases'].apply(pd.Series)], axis=1)
+    df["receivedDayOfWeek"] = pd.to_datetime(df["receivedDateTime"], errors='ignore').dt.day_name()
+    for col in df.columns:
+        if 'DateTime' in col:
+          df[col] = pd.to_datetime(df[col], errors='ignore').dt.strftime("%Y-%m-%d %H:%M")
     return df
 
 
